@@ -1,0 +1,123 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextIndex"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Standing {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  leagueId Int
+  league   League @relation(fields: [leagueId], references: [leagueId])
+  teamId   Int
+  team     Team   @relation(fields: [teamId, leagueId], references: [teamId, leagueId])
+
+  awayLosses      Int?
+  awayTies        Int?
+  awayWins        Int?
+  calendarYear    Int?
+  capAvailable    Int?
+  capRoom         Int?
+  capSpent        Int?
+  confLosses      Int?
+  confTies        Int?
+  confWins        Int?
+  conferenceId    Int?
+  conferenceName  String
+  defPassYds      Int?
+  defPassYdsRank  Int?
+  defRushYds      Int?
+  defRushYdsRank  Int?
+  defTotalYds     Int?
+  defTotalYdsRank Int?
+  divLosses       Int?
+  divTies         Int?
+  divWins         Int?
+  divisionId      Int?
+  divisionName    String?
+  homeLosses      Int?
+  homeTies        Int?
+  homeWins        Int?
+  netPts          Int?
+  offPassYds      Int?
+  offPassYdsRank  Int?
+  offRushYds      Int?
+  offRushYdsRank  Int?
+  offTotalYds     Int?
+  offTotalYdsRank Int?
+  playoffStatus   Int?
+  prevRank        Int?
+  ptsAgainst      Int?
+  ptsAgainstRank  Int?
+  ptsFor          Int?
+  ptsForRank      Int?
+  rank            Int?
+  seasonIndex     Int?
+  seed            Int?
+  stageIndex      Int?
+  tODiff          Int?
+  teamName        String?
+  teamOvr         Int?
+  totalLosses     Int?
+  totalTies       Int?
+  totalWins       Int?
+  weekIndex       Int?
+  winLossStreak   Int?
+  winPct          Float?
+
+  @@unique([leagueId, teamId])
+}
+
+model Team {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  teamId    Int
+  leagueId  Int
+  league    League    @relation(fields: [leagueId], references: [leagueId])
+
+  abbrName       String
+  cityName       String
+  defScheme      Int
+  displayName    String
+  divName        String
+  injuryCount    Int
+  logoId         Int
+  nickName       String
+  offScheme      Int
+  ovrRating      Int
+  primaryColor   Int
+  secondaryColor Int
+  userName       String
+
+  // players           Player[]
+  // awayTeamSchedules Schedule[] @relation("Schedule_awayTeam_Team")
+  // homeTeamSchedules Schedule[] @relation("Schedule_homeTeam_Team")
+  standings         Standing[]
+  // stats             Stat[]
+  // teamStats         TeamStat[]
+
+  @@unique([leagueId, teamId])
+}
+
+model League {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  leagueId  Int       @unique
+  name      String
+  slug      String
+  discordId String?
+  console   String?
+  year      Int?
+
+  // players   Player[]
+  // schedules Schedule[]
+  // stats     Stat[]
+  standings Standing[]
+  teams     Team[]
+  // TeamStat  TeamStat[]
+}
